@@ -1,0 +1,38 @@
+# Environment
+.env
+
+# Composer
+/vendor/
+
+# Logs
+*.log
+
+# Cache
+/cache/
+/tmp/
+
+# Uploads utilisateurs
+/uploads/*
+!/uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PHPUnit
+.phpunit.result.cache
+
+# Backup
+*.zip
+*.rar
+*.bak
+
+# Node
+node_modules/
+
+# Composer Lock (optionnel)
+# composer.lock

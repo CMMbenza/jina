@@ -1,0 +1,21 @@
+# Interdire la navigation dans les répertoires
+Options -Indexes
+
+# Protéger les fichiers sensibles (config, etc.)
+<FilesMatch "\.(php|inc|env)$">
+    Order Deny,Allow
+    Deny from all
+    Allow from all
+</FilesMatch>
+
+# Gestion des erreurs personnalisées
+ErrorDocument 404 /404.php
+
+# Activer la réécriture d'URL (pour vos identifiants propres)
+RewriteEngine On
+RewriteBase /
+
+# Exemple : transformer index.php?identify=nom en /profil/nom
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^profil/([a-zA-Z0-9_-]+)$ index.php?identify=$1 [L]
