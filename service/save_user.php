@@ -17,48 +17,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $loginUrl = "../auth/login.php"; 
         $retryUrl = "javascript:history.back()";
         ?>
-        <!DOCTYPE html>
-        <html lang="fr">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title><?php echo $title; ?></title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-            <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-            <style>
-            :root { --jina-blue: #0f2256; --jina-yellow: #ffcc00; --light-bg: #f5f7fa; }
-            body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--light-bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-            .response-card { background: white; border-radius: 24px; box-shadow: 0 15px 40px rgba(15, 34, 86, 0.06); padding: 40px; max-width: 500px; width: 100%; text-align: center; position: relative; overflow: hidden; }
-            .response-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--jina-blue) 0%, var(--jina-yellow) 100%); }
-            .btn-jina-primary { background-color: var(--jina-blue); color: white; font-weight: 700; border: none; border-radius: 10px; padding: 12px 30px; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
-            .btn-jina-primary:hover { background-color: #07112c; color: var(--jina-yellow); }
-            .btn-jina-secondary { background-color: #cbd5e1; color: #334155; font-weight: 600; border: none; border-radius: 10px; padding: 12px 30px; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
-            .btn-jina-secondary:hover { background-color: #94a3b8; color: white; }
-            </style>
-        </head>
-        <body>
-            <div class="container d-flex justify-content-center">
-                <div class="response-card">
-                    <div class="mb-4">
-                        <i class="fas <?php echo $icon; ?> fa-4x" style="color: <?php echo $iconColor; ?>;"></i>
-                    </div>
-                    <h3 class="fw-bold mb-3" style="color: var(--jina-blue);"><?php echo $title; ?></h3>
-                    <p class="text-muted mb-4"><?php echo $message; ?></p>
-                    <?php if ($isSuccess): ?>
-                    <a href="<?php echo $loginUrl; ?>" class="btn btn-jina-primary shadow-sm">
-                        <i class="fas fa-sign-in-alt me-2"></i> Se connecter
-                    </a>
-                    <?php else: ?>
-                    <a href="<?php echo $retryUrl; ?>" class="btn btn-jina-secondary">
-                        <i class="fas fa-arrow-left me-2"></i> Réessayer
-                    </a>
-                    <?php endif; ?>
-                </div>
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+    :root {
+        --jina-blue: #0f2256;
+        --jina-yellow: #ffcc00;
+        --light-bg: #f5f7fa;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--light-bg);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .response-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 15px 40px rgba(15, 34, 86, 0.06);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .response-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--jina-blue) 0%, var(--jina-yellow) 100%);
+    }
+
+    .btn-jina-primary {
+        background-color: var(--jina-blue);
+        color: white;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 30px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-jina-primary:hover {
+        background-color: #07112c;
+        color: var(--jina-yellow);
+    }
+
+    .btn-jina-secondary {
+        background-color: #cbd5e1;
+        color: #334155;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 30px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-jina-secondary:hover {
+        background-color: #94a3b8;
+        color: white;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container d-flex justify-content-center">
+        <div class="response-card">
+            <div class="mb-4">
+                <i class="fas <?php echo $icon; ?> fa-4x" style="color: <?php echo $iconColor; ?>;"></i>
             </div>
-        </body>
-        </html>
-        <?php
+            <h3 class="fw-bold mb-3" style="color: var(--jina-blue);"><?php echo $title; ?></h3>
+            <p class="text-muted mb-4"><?php echo $message; ?></p>
+            <?php if ($isSuccess): ?>
+            <a href="<?php echo $loginUrl; ?>" class="btn btn-jina-primary shadow-sm">
+                <i class="fas fa-sign-in-alt me-2"></i> Se connecter
+            </a>
+            <?php else: ?>
+            <a href="<?php echo $retryUrl; ?>" class="btn btn-jina-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Réessayer
+            </a>
+            <?php endif; ?>
+        </div>
+    </div>
+</body>
+
+</html>
+<?php
     }
 
     // Fonction de téléversement des fichiers
@@ -103,7 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdo->beginTransaction();
 
-        $passwordHash = password_hash($_POST['password'], PASSWORD_BCRYPT);
+        $rawPassword = $_POST['password']; // On garde le mot de passe en clair pour l'envoyer par mail
+        $passwordHash = password_hash($rawPassword, PASSWORD_BCRYPT);
 
         // Chemin absolu pour le dossier des uploads
         $uploadTargetDir = dirname(__DIR__) . "/uploads/";
@@ -250,7 +317,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $pdo->commit();
-        displayResponse(true, "Profil créé avec succès ! Votre compte JINA est désormais actif.");
+
+        // --- 6. ENVOI DE L'EMAIL DE BIENVENUE (CODE PUR PHP) ---
+        $to = trim($_POST['email']);
+        $username = trim($_POST['username']);
+        $siteUrl = !empty($_POST['social_perso']['site']) ? $_POST['social_perso']['site'] : 'https://ntcard.notechgroup.com/' . $_POST['identify'];
+
+        $subject = "Bienvenue chez JINA - Vos identifiants de connexion";
+
+        // Structure HTML de l'email reprenant la charte graphique de JINA
+        $messageHtml = "
+        <html>
+        <head>
+            <title>Bienvenue chez JINA</title>
+        </head>
+        <body style='font-family: Arial, sans-serif; background-color: #f5f7fa; color: #1e293b; padding: 20px; margin: 0;'>
+            <div style='max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #0f2256;'>
+                <div style='padding: 30px; text-align: center; background-color: #0f2256;'>
+                    <h2 style='color: #ffcc00; margin: 0; font-size: 24px; font-weight: bold;'>Félicitations !</h2>
+                    <p style='color: white; margin: 5px 0 0 0;'>Votre profil JINA a été créé avec succès.</p>
+                </div>
+                <div style='padding: 30px;'>
+                    <p>Bonjour <strong>$username</strong>,</p>
+                    <p>Nous sommes ravis de vous compter parmi les membres de la communauté <strong>JINA</strong>. Voici vos accès de connexion à conserver précieusement :</p>
+                    
+                    <div style='background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 20px 0;'>
+                        <p style='margin: 0 0 10px 0;'><strong>Nom d'utilisateur / Email :</strong> $to</p>
+                        <p style='margin: 0 0 10px 0;'><strong>Mot de passe :</strong> <span style='font-family: monospace; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;'>$rawPassword</span></p>
+                        <p style='margin: 0;'><strong>Votre site personnel JINA :</strong> <a href='$siteUrl' style='color: #0f2256; font-weight: bold;'>$siteUrl</a></p>
+                    </div>
+
+                    <p style='text-align: center; margin-top: 30px;'>
+                        <a href='https://ntcard.notechgroup.com/auth/login.php' style='background-color: #0f2256; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;'>Se connecter à mon espace</a>
+                    </p>
+                </div>
+                <div style='background-color: #f1f5f9; padding: 15px; text-align: center; font-size: 12px; color: #64748b;'>
+                    © " . date('Y') . " JINA. Tous droits réservés.
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        // En-têtes obligatoires pour un mail HTML propre et sécurisé
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        $headers .= "From: JINA <no-reply@notechgroup.com>" . "\r\n";
+        $headers .= "Reply-To: support@notechgroup.com" . "\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion();
+
+        // Envoi effectif de l'email
+        @mail($to, $subject, $messageHtml, $headers);
+
+        displayResponse(true, "Profil créé avec succès ! Votre compte JINA est désormais actif et vos identifiants viennent de vous être envoyés par email.");
 
     } catch (Exception $e) {
         if (isset($pdo) && $pdo && $pdo->inTransaction()) {
