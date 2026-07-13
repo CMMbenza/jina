@@ -321,7 +321,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // --- 6. ENVOI DE L'EMAIL DE BIENVENUE (CODE PUR PHP) ---
         $to = trim($_POST['email']);
         $username = trim($_POST['username']);
-        $siteUrl = !empty($_POST['social_perso']['site']) ? $_POST['social_perso']['site'] : 'https://ntcard.notechgroup.com/' . $_POST['identify'];
+        $siteUrl = !empty($_POST['social_perso']['site']) ? $_POST['social_perso']['site'] : 'https://jina.notechgroup.com/' . $_POST['identify'];
 
         $subject = "Bienvenue chez JINA - Vos identifiants de connexion";
 
@@ -348,7 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <p style='text-align: center; margin-top: 30px;'>
-                        <a href='https://ntcard.notechgroup.com/auth/login.php' style='background-color: #0f2256; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;'>Se connecter à mon espace</a>
+                        <a href='https://jina.notechgroup.com/auth/login.php' style='background-color: #0f2256; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;'>Se connecter à mon espace</a>
                     </p>
                 </div>
                 <div style='background-color: #f1f5f9; padding: 15px; text-align: center; font-size: 12px; color: #64748b;'>
