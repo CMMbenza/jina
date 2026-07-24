@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     .login-container {
         width: 100%;
-        max-width: 420px;
+        max-width: 550px;
         padding: 15px;
     }
 

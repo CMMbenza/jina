@@ -91,6 +91,7 @@ function getSocialIcon($plateforme) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | JINA</title>
 
+    <link rel="shortcut icon" href="../assets/img/logo-jina.ico" type="image/x-icon">
     <!-- Bootstrap 5, FontAwesome & Google Fonts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -223,28 +224,214 @@ function getSocialIcon($plateforme) {
     }
 
     /* DESIGN DE LA CARTE VIRTUELLE INTEGRÉE */
-    .physical-card-container {
+    /* .physical-card-container {
         max-width: 340px;
+        margin: 0 auto;
+    } */
+
+    /* DESIGN DE LA CARTE VIRTUELLE INTEGRÉE AVEC DIMENSIONS RÉELLES (1650x2550) */
+    .physical-card-container {
+        max-width: 400px;
         margin: 0 auto;
     }
 
+    /* Format proportionnel d'affichage à l'écran (Ratio 1650 / 2550 = 0.647) */
     .nt-card {
+        width: 100%;
+        aspect-ratio: 1650 / 2550;
         background: #e9ecf5;
-        border-radius: 20px;
-        padding: 24px 20px;
+        border-radius: 28px;
+        padding: 35px 30px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
         color: #1a2238;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-sizing: border-box;
     }
 
     .nt-card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 18px;
     }
 
     .nt-card-avatar-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .nt-card-avatar {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+    }
+
+    .nt-card-verified {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        background: #2563eb;
+        color: white;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #e9ecf5;
+    }
+
+    .nt-card-identity {
+        flex: 1;
+        padding-left: 14px;
+        text-align: left;
+    }
+
+    .nt-card-name {
+        font-size: 1.25rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #0f2256;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+    }
+
+    .nt-card-sub {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #4b5563;
+        font-style: italic;
+    }
+
+    .nt-card-logo img {
+        max-width: 55px;
+        height: auto;
+        border-radius: 6px;
+    }
+
+    .nt-card-body-details {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(5px);
+        border-radius: 16px;
+        padding: 16px 18px;
+        font-size: 0.9rem;
+    }
+
+    .nt-card-qr-area {
+        position: relative;
+        display: inline-block;
+        background: white;
+        padding: 16px;
+        border-radius: 16px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        margin: 0 auto;
+    }
+
+    .nt-card-qr-area img.qr-main {
+        width: 140px;
+        height: 140px;
+        display: block;
+    }
+
+    .nt-card-qr-logo-centered {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 36px;
+        height: 36px;
+        background-color: #ffffff;
+        padding: 3px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nt-card-qr-logo-centered img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 4px;
+    }
+
+    .nt-details-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .nt-details-row:last-child {
+        border-bottom: none;
+    }
+
+    .nt-details-row i {
+        color: #475569;
+        width: 16px;
+        text-align: center;
+    }
+
+    .nt-details-text {
+        font-weight: 600;
+        color: #334155;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .nt-card-socials-row {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .nt-mini-social-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #0f2256;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        text-decoration: none;
+    }
+
+    .nt-card-footer-tag {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #94a3b8;
+        letter-spacing: 2px;
+        text-align: center;
+    }
+
+    /* .nt-card {
+        background: #e9ecf5;
+        border-radius: 20px;
+        padding: 24px 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        color: #1a2238;
+        position: relative;
+    } */
+
+    /* .nt-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+    } */
+
+    /* .nt-card-avatar-wrapper {
         position: relative;
         display: inline-block;
     }
@@ -346,9 +533,9 @@ function getSocialIcon($plateforme) {
         height: 100%;
         object-fit: contain;
         border-radius: 4px;
-    }
+    } */
 
-    .nt-details-row {
+    /* .nt-details-row {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -364,9 +551,9 @@ function getSocialIcon($plateforme) {
         color: #475569;
         width: 14px;
         text-align: center;
-    }
+    } */
 
-    .nt-details-text {
+    /* .nt-details-text {
         font-weight: 600;
         color: #334155;
         white-space: nowrap;
@@ -400,7 +587,7 @@ function getSocialIcon($plateforme) {
         color: #94a3b8;
         letter-spacing: 2px;
         margin-top: 8px;
-    }
+    } */
     </style>
 </head>
 
@@ -633,12 +820,12 @@ function getSocialIcon($plateforme) {
                                 <i class="fas fa-envelope"></i>
                                 <div class="nt-details-text"><?php echo htmlspecialchars($user_data['email']); ?></div>
                             </div>
-                            <!-- <div class="nt-details-row">
+                            <div class="nt-details-row">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <div class="nt-details-text">
                                     <?php echo htmlspecialchars($card_address); ?>
                                 </div>
-                            </div> -->
+                            </div>
 
                             <!-- Mini icônes horizontales - FILTRÉES UNIQUEMENT SUR 'perso' -->
                             <div class="nt-card-socials-row">
@@ -700,13 +887,30 @@ function getSocialIcon($plateforme) {
     <script>
     function downloadCard() {
         const card = document.getElementById('ntCardExport');
+
         html2canvas(card, {
-            scale: 3,
-            useCORS: true
+            width: card.offsetWidth,
+            height: card.offsetHeight,
+            scale: 1650 / card.offsetWidth,
+            useCORS: true,
+            logging: false
         }).then(canvas => {
+            const outputCanvas = document.createElement('canvas');
+            outputCanvas.width = 1650;
+            outputCanvas.height = 2550;
+
+            const ctx = outputCanvas.getContext('2d');
+            ctx.drawImage(canvas, 0, 0, 1650, 2550);
+
+            // Nom dynamique généré avec PHP
+            <?php 
+                $filename = 'Carte-JINA-' . preg_replace('/[^a-zA-Z0-9_-]/', '', ($profile['prenom'] ?? '') . '-' . ($profile['nom'] ?? 'User'));
+            ?>
+            const filename = "<?php echo $filename; ?>.png";
+
             const link = document.createElement('a');
-            link.download = 'Ma-Carte-JINA.png';
-            link.href = canvas.toDataURL();
+            link.download = filename;
+            link.href = outputCanvas.toDataURL('image/png', 1.0);
             link.click();
         });
     }

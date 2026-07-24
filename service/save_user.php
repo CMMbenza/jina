@@ -232,8 +232,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // --- 3. INSERTION DANS LES TABLES SPECIFIQUES ---
         if ($accountType === 'employer') {
-            $sqlEmployment = "INSERT INTO employment_details (user_id, nom_entreprise, poste, about_entreprise) 
-                              VALUES (:user_id, :nom_entreprise, :poste, :about_entreprise)";
+            $sqlEmployment = "INSERT INTO employment_details (user_id, nom_entreprise, poste, about_entreprise, adresse_bureau) 
+                              VALUES (:user_id, :nom_entreprise, :poste, :about_entreprise, :adresse_bureau)";
             
             $stmtEmployment = $pdo->prepare($sqlEmployment);
             $stmtEmployment->execute([
@@ -241,6 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':nom_entreprise'   => $_POST['nom_entreprise'] ?? null,
                 ':poste'            => $_POST['poste_actuel'] ?? null,
                 ':about_entreprise' => $_POST['apropos_entreprise'] ?? null
+                ':adresse_bureau' => $_POST['adress_bureau'] ?? null
             ]);
         } 
         elseif ($accountType === 'freelance') {

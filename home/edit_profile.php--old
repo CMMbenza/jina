@@ -14,21 +14,21 @@ $error_msg = "";
 // 1. CHARGEMENT INITIAL DES DONNÉES DE L'UTILISATEUR
 $user_stmt = $pdo->prepare("SELECT username, account_type, email FROM users WHERE id = ?");
 $user_stmt->execute([$user_id]);
-$user_data = $user_stmt->fetch(PDO::FETCH_ASSOC);
+$user_data = $user_stmt->fetch();
 
 $profile_stmt = $pdo->prepare("SELECT * FROM profiles WHERE user_id = ?");
 $profile_stmt->execute([$user_id]);
-$profile = $profile_stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+$profile = $profile_stmt->fetch();
 
 // Compétences existantes
 $comp_stmt = $pdo->prepare("SELECT competence FROM user_competences WHERE user_id = ?");
 $comp_stmt->execute([$user_id]);
-$current_competences = $comp_stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+$current_competences = $comp_stmt->fetchAll(PDO::FETCH_COLUMN);
 
 // Réseaux sociaux existants
 $socials_stmt = $pdo->prepare("SELECT plateforme, url, type_reseau FROM user_socials WHERE user_id = ?");
 $socials_stmt->execute([$user_id]);
-$current_socials = $socials_stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+$current_socials = $socials_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $social_mapped = [];
 foreach ($current_socials as $s) {
@@ -39,24 +39,24 @@ $details = [];
 $current_services = [];
 $current_catalogues = [];
 
-if (($user_data['account_type'] ?? '') === 'employer') {
+if ($user_data['account_type'] === 'employer') {
     $stmt = $pdo->prepare("SELECT * FROM employment_details WHERE user_id = ?");
     $stmt->execute([$user_id]);
-    $details = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    $details = $stmt->fetch();
 } else {
     $stmt = $pdo->prepare("SELECT * FROM freelance_details WHERE user_id = ?");
     $stmt->execute([$user_id]);
-    $details = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    $details = $stmt->fetch();
 
-    // Récupération des services
+    // Récupération complète des services pour les afficher dans le formulaire
     $services_stmt = $pdo->prepare("SELECT titre, description FROM user_services WHERE user_id = ?");
     $services_stmt->execute([$user_id]);
-    $current_services = $services_stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $current_services = $services_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Récupération du catalogue produits
+    // Récupération complète du catalogue produits
     $catalogues_stmt = $pdo->prepare("SELECT nom_produit, image_produit FROM user_catalogues WHERE user_id = ?");
     $catalogues_stmt->execute([$user_id]);
-    $current_catalogues = $catalogues_stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $current_catalogues = $catalogues_stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // 2. TRAITEMENT DE LA MISE À JOUR (SOUMISSION DU FORMULAIRE)
@@ -90,14 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Insertion / Mise à jour Table `profiles`
-        if (!empty($profile)) {
+        if ($profile) {
             $up_prof = $pdo->prepare("UPDATE profiles SET nom = ?, prenom = ?, titre = ?, bio = ?, tel_perso = ?, photo_profil = ?, photo_couverture = ? WHERE user_id = ?");
             $up_prof->execute([$nom, $prenom, $titre, $bio, $tel_perso, $photo_profil, $photo_couverture, $user_id]);
         } else {
-            // Génération dynamique de `identify` si nouveau profil
-            $identify = bin2hex(random_bytes(10));
-            $in_prof = $pdo->prepare("INSERT INTO profiles (user_id, nom, prenom, titre, bio, tel_perso, photo_profil, photo_couverture, identify) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $in_prof->execute([$user_id, $nom, $prenom, $titre, $bio, $tel_perso, $photo_profil, $photo_couverture, $identify]);
+            $in_prof = $pdo->prepare("INSERT INTO profiles (user_id, nom, prenom, titre, bio, tel_perso, photo_profil, photo_couverture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $in_prof->execute([$user_id, $nom, $prenom, $titre, $bio, $tel_perso, $photo_profil, $photo_couverture]);
         }
 
         // Nettoyage et insertion des compétences
@@ -123,17 +121,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // TRAITEMENT DYNAMIQUE SELON LE TYPE DE COMPTE
-        if (($user_data['account_type'] ?? '') === 'employer') {
+        if ($user_data['account_type'] === 'employer') {
             $nom_entreprise = $_POST['nom_entreprise'] ?? null;
             $poste_actuel = $_POST['poste_actuel'] ?? null;
             $apropos_entreprise = $_POST['apropos_entreprise'] ?? null;
 
-            if (!empty($details)) {
-                $up_emp = $pdo->prepare("UPDATE employment_details SET nom_entreprise = ?, poste = ?, about_entreprise = ?, adresse_bureau = ? WHERE user_id = ?");
-                $up_emp->execute([$nom_entreprise, $poste_actuel, $apropos_entreprise, $adress_bureau, $user_id]);
+            if ($details) {
+                $up_emp = $pdo->prepare("UPDATE employment_details SET nom_entreprise = ?, poste = ?, about_entreprise = ? WHERE user_id = ?");
+                $up_emp->execute([$nom_entreprise, $poste_actuel, $apropos_entreprise, $user_id]);
             } else {
-                $in_emp = $pdo->prepare("INSERT INTO employment_details (user_id, nom_entreprise, poste, about_entreprise, adresse_bureau) VALUES (?, ?, ?, ?, ?)");
-                $in_emp->execute([$user_id, $nom_entreprise, $poste_actuel, $apropos_entreprise, $adress_bureau]);
+                $in_emp = $pdo->prepare("INSERT INTO employment_details (user_id, nom_entreprise, poste, about_entreprise) VALUES (?, ?, ?, ?)");
+                $in_emp->execute([$user_id, $nom_entreprise, $poste_actuel, $apropos_entreprise]);
             }
 
             if (!empty($_POST['social_entreprise'])) {
@@ -156,11 +154,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            if (!empty($details)) {
+            if ($details) {
                 $up_free = $pdo->prepare("UPDATE freelance_details SET nom_entreprise = ?, desc_entreprise = ?, tel_bureau = ?, adresse_bureau = ?, logo_entreprise = ? WHERE user_id = ?");
                 $up_free->execute([$nom_entreprise_free, $desc_entreprise_free, $tel_bureau, $adresse_bureau, $logo_entreprise, $user_id]);
             } else {
-                $in_free = $pdo->prepare("INSERT INTO freelance_details (user_id, nom_entreprise, desc_entreprise, tel_bureau, adresse_bureau, logo_entreprise) VALUES (?, ?, ?, ?, ?, ?)");
+                $in_free = $pdo->prepare("INSERT INTO freelance_details (user_id, nom_entreprise, desc_entreprise, tel_bureau, adresse_bureau, logo_entreprise) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $in_free->execute([$user_id, $nom_entreprise_free, $desc_entreprise_free, $tel_bureau, $adresse_bureau, $logo_entreprise]);
             }
 
@@ -170,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Services
+            // Gestion Unifiée des Services (Suppression globale puis réécriture complète)
             $del_serv = $pdo->prepare("DELETE FROM user_services WHERE user_id = ?");
             $del_serv->execute([$user_id]);
             if (!empty($_POST['service_titre'])) {
@@ -183,12 +181,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Catalogue Produits
+            // Gestion Unifiée du Catalogue Produits
             $del_cat = $pdo->prepare("DELETE FROM user_catalogues WHERE user_id = ?");
             $del_cat->execute([$user_id]);
             if (!empty($_POST['catalogue_nom'])) {
                 $in_cat = $pdo->prepare("INSERT INTO user_catalogues (user_id, nom_produit, image_produit) VALUES (?, ?, ?)");
                 foreach ($_POST['catalogue_nom'] as $index => $nom_produit) {
+                    
+                    // On récupère l'ancienne image stockée dans un input hidden s'il n'y a pas d'upload frais
                     $img_produit = $_POST['old_catalogue_image'][$index] ?? '';
                     
                     if (!empty($_FILES['catalogue_image']['name'][$index])) {
@@ -313,40 +313,40 @@ if (isset($_GET['success'])) {
 
                 <div class="row g-3 mb-3">
                     <div class="col-sm-4">
-                        <label class="form-label small fw-bold">Nom</label>
-                        <input type="text" name="nom" class="form-control" placeholder="Entrez votre nom"
-                            value="<?php echo htmlspecialchars($profile['nom'] ?? ''); ?>">
+                        <label class="form-label small fw-bold">Nom *</label>
+                        <input type="text" name="nom" class="form-control"
+                            value="<?php echo htmlspecialchars($profile['nom'] ?? ''); ?>" required>
                     </div>
                     <div class="col-sm-4">
-                        <label class="form-label small fw-bold">Prénom</label>
-                        <input type="text" name="prenom" class="form-control" placeholder="Entrez votre prénom"
-                            value="<?php echo htmlspecialchars($profile['prenom'] ?? ''); ?>">
+                        <label class="form-label small fw-bold">Prénom *</label>
+                        <input type="text" name="prenom" class="form-control"
+                            value="<?php echo htmlspecialchars($profile['prenom'] ?? ''); ?>" required>
                     </div>
                     <div class="col-sm-4">
                         <label class="form-label small fw-bold">Titre (ex: Ir, Dr, Freelance Dev)</label>
-                        <input type="text" name="titre" class="form-control" placeholder="Ex: Développeur Web"
+                        <input type="text" name="titre" class="form-control"
                             value="<?php echo htmlspecialchars($profile['titre'] ?? ''); ?>">
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Biographie courte</label>
-                    <textarea name="bio" class="form-control" rows="2"
-                        placeholder="Présentez-vous en quelques mots..."><?php echo htmlspecialchars($profile['bio'] ?? ''); ?></textarea>
+                    <textarea name="bio" class="form-control"
+                        rows="2"><?php echo htmlspecialchars($profile['bio'] ?? ''); ?></textarea>
                 </div>
 
                 <div class="row g-3 mb-3 align-items-center">
                     <div class="col-sm-6">
-                        <label class="form-label small fw-bold">Téléphone Personnel</label>
-                        <input type="tel" name="tel_perso" class="form-control" placeholder="+243..."
-                            value="<?php echo htmlspecialchars($profile['tel_perso'] ?? ''); ?>">
+                        <label class="form-label small fw-bold">Téléphone Personnel *</label>
+                        <input type="tel" name="tel_perso" class="form-control"
+                            value="<?php echo htmlspecialchars($profile['tel_perso'] ?? ''); ?>" required>
                     </div>
                     <div class="col-sm-6">
-                        <label class="form-label small fw-bold">Activités / Compétences (séparées par des
-                            virgules)</label>
+                        <label class="form-label small fw-bold">Activités / Compétences (séparées par des virgules)
+                            *</label>
                         <input type="text" name="activites_competences" class="form-control"
                             value="<?php echo htmlspecialchars(implode(', ', $current_competences)); ?>"
-                            placeholder="PHP, UI/UX, Management...">
+                            placeholder="PHP, UI/UX, Dev..." required>
                     </div>
                 </div>
 
@@ -388,36 +388,30 @@ if (isset($_GET['success'])) {
                     </div>
                     <div class="col-sm-6">
                         <input type="url" name="social_perso[whatsapp]" class="form-control form-control-sm"
-                            placeholder="Lien WhatsApp"
+                            placeholder="Lien d'API WhatsApp"
                             value="<?php echo htmlspecialchars($social_mapped['perso']['whatsapp'] ?? ''); ?>">
                     </div>
                 </div>
 
-                <?php if(($user_data['account_type'] ?? '') === 'employer'): ?>
+                <?php if($user_data['account_type'] === 'employer'): ?>
                 <h5 class="section-title"><i class="fas fa-building me-2"></i>3. Informations d'Entreprise (Salarié)
                 </h5>
                 <div class="row g-3 mb-3">
                     <div class="col-sm-6">
-                        <label class="form-label small fw-bold">Nom de l'entreprise</label>
-                        <input type="text" name="nom_entreprise" class="form-control" placeholder="Nom de l'entreprise"
-                            value="<?php echo htmlspecialchars($details['nom_entreprise'] ?? ''); ?>">
+                        <label class="form-label small fw-bold">Nom de l'entreprise *</label>
+                        <input type="text" name="nom_entreprise" class="form-control"
+                            value="<?php echo htmlspecialchars($details['nom_entreprise'] ?? ''); ?>" required>
                     </div>
                     <div class="col-sm-6">
-                        <label class="form-label small fw-bold">Votre poste actuel</label>
-                        <input type="text" name="poste_actuel" class="form-control" placeholder="Votre poste"
-                            value="<?php echo htmlspecialchars($details['poste'] ?? ''); ?>">
+                        <label class="form-label small fw-bold">Votre poste actuel *</label>
+                        <input type="text" name="poste_actuel" class="form-control"
+                            value="<?php echo htmlspecialchars($details['poste'] ?? ''); ?>" required>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label small fw-bold">À propos de l'entreprise</label>
+                    <label class="form-label small fw-bold">À propos de l'entreprise *</label>
                     <textarea name="apropos_entreprise" class="form-control" rows="2"
-                        placeholder="Description de l'entreprise..."><?php echo htmlspecialchars($details['about_entreprise'] ?? ''); ?></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Adresse du bureau</label>
-                    <textarea name="adress_bureau" class="form-control" rows="2"
-                        placeholder="Adresse de l'entreprise..."><?php echo htmlspecialchars($details['adresse_bureau'] ?? ''); ?></textarea>
+                        required><?php echo htmlspecialchars($details['about_entreprise'] ?? ''); ?></textarea>
                 </div>
 
                 <label class="form-label small fw-bold text-muted">Réseaux Sociaux de l'Entreprise</label>
@@ -436,26 +430,24 @@ if (isset($_GET['success'])) {
                 <h5 class="section-title"><i class="fas fa-briefcase me-2"></i>3. Informations d'Activité Pro
                     (Freelance)</h5>
                 <div class="mb-3">
-                    <label class="form-label small fw-bold">Nom de votre marque / établissement</label>
+                    <label class="form-label small fw-bold">Nom de votre marque / établissement *</label>
                     <input type="text" name="nom_entreprise_free" class="form-control"
-                        placeholder="Ex: Studio Graphic, NoTech..."
-                        value="<?php echo htmlspecialchars($details['nom_entreprise'] ?? ''); ?>">
+                        value="<?php echo htmlspecialchars($details['nom_entreprise'] ?? ''); ?>" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label small fw-bold">Description courte d'activité</label>
+                    <label class="form-label small fw-bold">Description courte d'activité *</label>
                     <textarea name="desc_entreprise_free" class="form-control" rows="2"
-                        placeholder="Description des prestations..."><?php echo htmlspecialchars($details['desc_entreprise'] ?? ''); ?></textarea>
+                        required><?php echo htmlspecialchars($details['desc_entreprise'] ?? ''); ?></textarea>
                 </div>
                 <div class="row g-3 mb-3">
                     <div class="col-sm-6">
                         <label class="form-label small fw-bold">Téléphone Bureau</label>
-                        <input type="tel" name="tel_bureau" class="form-control" placeholder="+243..."
+                        <input type="tel" name="tel_bureau" class="form-control"
                             value="<?php echo htmlspecialchars($details['tel_bureau'] ?? ''); ?>">
                     </div>
                     <div class="col-sm-6">
                         <label class="form-label small fw-bold">Adresse Bureau</label>
                         <input type="text" name="adresse_bureau" class="form-control"
-                            placeholder="Ville, Commune, Avenue..."
                             value="<?php echo htmlspecialchars($details['adresse_bureau'] ?? ''); ?>">
                     </div>
                 </div>
@@ -480,7 +472,6 @@ if (isset($_GET['success'])) {
                     </div>
                 </div>
 
-                <!-- SECTION SERVICES DYNAMIQUE -->
                 <div class="mb-4" id="services-area">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label class="fw-bold small m-0 text-dark"><i class="fas fa-concierge-bell me-1"></i> Mes
@@ -489,17 +480,13 @@ if (isset($_GET['success'])) {
                             onclick="addServiceField()"><i class="fas fa-plus"></i> Ajouter</button>
                     </div>
 
-                    <?php 
-                    // S'il n'y a aucun service enregistré, on affiche au moins une ligne vide
-                    $services_to_show = !empty($current_services) ? $current_services : [['titre' => '', 'description' => '']];
-                    foreach($services_to_show as $srv): 
-                    ?>
+                    <?php foreach($current_services as $srv): ?>
                     <div class="row g-2 mb-2 align-items-center">
                         <div class="col-sm-5"><input type="text" name="service_titre[]"
-                                class="form-control form-control-sm" placeholder="Nom du service"
-                                value="<?php echo htmlspecialchars($srv['titre']); ?>"></div>
+                                class="form-control form-control-sm"
+                                value="<?php echo htmlspecialchars($srv['titre']); ?>" required></div>
                         <div class="col-sm-6"><input type="text" name="service_desc[]"
-                                class="form-control form-control-sm" placeholder="Description courte"
+                                class="form-control form-control-sm"
                                 value="<?php echo htmlspecialchars($srv['description']); ?>"></div>
                         <div class="col-sm-1"><button type="button" class="btn btn-sm btn-danger shadow-sm"
                                 onclick="this.parentElement.parentElement.remove()"><i
@@ -508,7 +495,6 @@ if (isset($_GET['success'])) {
                     <?php endforeach; ?>
                 </div>
 
-                <!-- SECTION CATALOGUE DYNAMIQUE -->
                 <div class="mb-4" id="catalogue-area">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label class="fw-bold small m-0 text-dark"><i class="fas fa-box-open me-1"></i> Mon Catalogue
@@ -517,26 +503,20 @@ if (isset($_GET['success'])) {
                             onclick="addCatalogueField()"><i class="fas fa-plus"></i> Ajouter</button>
                     </div>
 
-                    <?php 
-                    // S'il n'y a aucun produit enregistré, on affiche au moins une ligne vide
-                    $catalogues_to_show = !empty($current_catalogues) ? $current_catalogues : [['nom_produit' => '', 'image_produit' => '']];
-                    foreach($catalogues_to_show as $cat): 
-                    ?>
+                    <?php foreach($current_catalogues as $index => $cat): ?>
                     <div class="row g-2 mb-2 align-items-center">
                         <div class="col-sm-4">
                             <input type="text" name="catalogue_nom[]" class="form-control form-control-sm"
-                                placeholder="Nom du produit"
-                                value="<?php echo htmlspecialchars($cat['nom_produit']); ?>">
+                                value="<?php echo htmlspecialchars($cat['nom_produit']); ?>" required>
                         </div>
                         <div class="col-sm-5">
                             <input type="file" name="catalogue_image[]" class="form-control form-control-sm">
                             <input type="hidden" name="old_catalogue_image[]"
-                                value="<?php echo htmlspecialchars($cat['image_produit']); ?>">
+                                value="<?php echo $cat['image_produit']; ?>">
                         </div>
                         <div class="col-sm-2 text-center">
-                            <?php if(!empty($cat['image_produit'])): ?><img
-                                src="<?php echo htmlspecialchars($cat['image_produit']); ?>" class="preview-img"
-                                style="width:35px;height:35px;"><?php endif; ?>
+                            <?php if(!empty($cat['image_produit'])): ?><img src="<?php echo $cat['image_produit']; ?>"
+                                class="preview-img" style="width:35px;height:35px;"><?php endif; ?>
                         </div>
                         <div class="col-sm-1">
                             <button type="button" class="btn btn-sm btn-danger shadow-sm"
@@ -561,7 +541,7 @@ if (isset($_GET['success'])) {
         const div = document.createElement('div');
         div.className = "row g-2 mb-2 align-items-center";
         div.innerHTML = `
-            <div class="col-sm-5"><input type="text" name="service_titre[]" class="form-control form-control-sm" placeholder="Nom du service"></div>
+            <div class="col-sm-5"><input type="text" name="service_titre[]" class="form-control form-control-sm" placeholder="Nom du service" required></div>
             <div class="col-sm-6"><input type="text" name="service_desc[]" class="form-control form-control-sm" placeholder="Description courte"></div>
             <div class="col-sm-1"><button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()"><i class="fas fa-times"></i></button></div>
         `;
@@ -573,8 +553,8 @@ if (isset($_GET['success'])) {
         const div = document.createElement('div');
         div.className = "row g-2 mb-2 align-items-center";
         div.innerHTML = `
-            <div class="col-sm-4"><input type="text" name="catalogue_nom[]" class="form-control form-control-sm" placeholder="Nom du produit"></div>
-            <div class="col-sm-6"><input type="file" name="catalogue_image[]" class="form-control form-control-sm"></div>
+            <div class="col-sm-4"><input type="text" name="catalogue_nom[]" class="form-control form-control-sm" placeholder="Nom du produit" required></div>
+            <div class="col-sm-6"><input type="file" name="catalogue_image[]" class="form-control form-control-sm" required></div>
             <input type="hidden" name="old_catalogue_image[]" value="">
             <div class="col-sm-1"><button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.parentElement.remove()"><i class="fas fa-times"></i></button></div>
         `;
