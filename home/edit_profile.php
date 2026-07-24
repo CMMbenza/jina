@@ -11,6 +11,12 @@ $user_id = $_SESSION['user_id'];
 $success_msg = "";
 $error_msg = "";
 
+// Assurer l'existence du dossier de téléchargement
+$upload_dir = "../uploads/";
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0777, true);
+}
+
 // Liste complète des réseaux sociaux pris en charge
 $social_platforms = [
     'facebook'  => ['label' => 'Facebook', 'icon' => 'fab fa-facebook-f'],
@@ -83,16 +89,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $photo_profil = $profile['photo_profil'] ?? null;
         $photo_couverture = $profile['photo_couverture'] ?? null;
 
-        if (!empty($_FILES['photo_profil']['name'])) {
-            $target = "uploads/profil_" . $user_id . "_" . time() . "_" . basename($_FILES['photo_profil']['name']);
-            if (move_uploaded_file($_FILES['photo_profil']['tmp_name'], $target)) {
-                $photo_profil = $target;
+        // TRAITEMENT PHOTO PROFIL
+        if (!empty($_FILES['photo_profil']['name']) && $_FILES['photo_profil']['error'] === UPLOAD_ERR_OK) {
+            $ext = pathinfo($_FILES['photo_profil']['name'], PATHINFO_EXTENSION);
+            $filename = "uploads/profil_" . $user_id . "_" . time() . "." . $ext;
+            if (move_uploaded_file($_FILES['photo_profil']['tmp_name'], "../" . $filename)) {
+                $photo_profil = $filename;
             }
         }
-        if (!empty($_FILES['photo_couverture']['name'])) {
-            $target = "uploads/cover_" . $user_id . "_" . time() . "_" . basename($_FILES['photo_couverture']['name']);
-            if (move_uploaded_file($_FILES['photo_couverture']['tmp_name'], $target)) {
-                $photo_couverture = $target;
+
+        // TRAITEMENT PHOTO COUVERTURE
+        if (!empty($_FILES['photo_couverture']['name']) && $_FILES['photo_couverture']['error'] === UPLOAD_ERR_OK) {
+            $ext = pathinfo($_FILES['photo_couverture']['name'], PATHINFO_EXTENSION);
+            $filename = "uploads/cover_" . $user_id . "_" . time() . "." . $ext;
+            if (move_uploaded_file($_FILES['photo_couverture']['tmp_name'], "../" . $filename)) {
+                $photo_couverture = $filename;
             }
         }
 
@@ -152,10 +163,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $adresse_bureau = $_POST['adresse_bureau'] ?? null;
             $logo_entreprise = $details['logo_entreprise'] ?? null;
 
-            if (!empty($_FILES['logo_entreprise_free']['name'])) {
-                $target = "uploads/logo_" . $user_id . "_" . time() . "_" . basename($_FILES['logo_entreprise_free']['name']);
-                if (move_uploaded_file($_FILES['logo_entreprise_free']['tmp_name'], $target)) {
-                    $logo_entreprise = $target;
+            if (!empty($_FILES['logo_entreprise_free']['name']) && $_FILES['logo_entreprise_free']['error'] === UPLOAD_ERR_OK) {
+                $ext = pathinfo($_FILES['logo_entreprise_free']['name'], PATHINFO_EXTENSION);
+                $filename = "uploads/logo_" . $user_id . "_" . time() . "." . $ext;
+                if (move_uploaded_file($_FILES['logo_entreprise_free']['tmp_name'], "../" . $filename)) {
+                    $logo_entreprise = $filename;
                 }
             }
 
@@ -186,19 +198,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Catalogue
+            // Catalogue (CORRIGÉ)
             $del_cat = $pdo->prepare("DELETE FROM user_catalogues WHERE user_id = ?");
             $del_cat->execute([$user_id]);
             if (!empty($_POST['catalogue_nom'])) {
                 $in_cat = $pdo->prepare("INSERT INTO user_catalogues (user_id, nom_produit, image_produit) VALUES (?, ?, ?)");
                 foreach ($_POST['catalogue_nom'] as $index => $nom_produit) {
                     $img_produit = $_POST['old_catalogue_image'][$index] ?? '';
-                    if (!empty($_FILES['catalogue_image']['name'][$index])) {
-                        $target = "uploads/prod_" . $user_id . "_" . time() . "_" . basename($_FILES['catalogue_image']['name'][$index]);
-                        if (move_uploaded_file($_FILES['catalogue_image']['tmp_name'][$index], $target)) {
-                            $img_produit = $target;
+                    
+                    // Vérification sécurisée du fichier pour chaque produit
+                    if (isset($_FILES['catalogue_image']['name'][$index]) && $_FILES['catalogue_image']['error'][$index] === UPLOAD_ERR_OK) {
+                        $ext = pathinfo($_FILES['catalogue_image']['name'][$index], PATHINFO_EXTENSION);
+                        $filename = "uploads/prod_" . $user_id . "_" . time() . "_" . $index . "." . $ext;
+                        if (move_uploaded_file($_FILES['catalogue_image']['tmp_name'][$index], "../" . $filename)) {
+                            $img_produit = $filename;
                         }
                     }
+
                     if (trim($nom_produit) !== '') {
                         $in_cat->execute([$user_id, trim($nom_produit), $img_produit]);
                     }
@@ -227,6 +243,9 @@ if (isset($_GET['success'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier mon Profil - JINA</title>
+
+    <link rel="shortcut icon" href="../assets/img/logo-jina.ico" type="image/x-icon">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
