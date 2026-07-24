@@ -11,7 +11,17 @@ $user_id = $_SESSION['user_id'];
 $success_msg = "";
 $error_msg = "";
 
-// 1. CHARGEMENT INITIAL DES DONNÉES DE L'UTILISATEUR
+// Liste complète des réseaux sociaux pris en charge
+$social_platforms = [
+    'facebook'  => ['label' => 'Facebook', 'icon' => 'fab fa-facebook-f'],
+    'twitter'   => ['label' => 'X (Twitter)', 'icon' => 'fab fa-x-twitter'],
+    'instagram' => ['label' => 'Instagram', 'icon' => 'fab fa-instagram'],
+    'youtube'   => ['label' => 'YouTube', 'icon' => 'fab fa-youtube'],
+    'tiktok'    => ['label' => 'TikTok', 'icon' => 'fab fa-tiktok'],
+    'linkedin'  => ['label' => 'LinkedIn', 'icon' => 'fab fa-linkedin-in']
+];
+
+// 1. CHARGEMENT INITIAL DES DONNÉES
 $user_stmt = $pdo->prepare("SELECT username, account_type, email FROM users WHERE id = ?");
 $user_stmt->execute([$user_id]);
 $user_data = $user_stmt->fetch(PDO::FETCH_ASSOC);
@@ -48,23 +58,22 @@ if (($user_data['account_type'] ?? '') === 'employer') {
     $stmt->execute([$user_id]);
     $details = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
-    // Récupération des services
+    // Services
     $services_stmt = $pdo->prepare("SELECT titre, description FROM user_services WHERE user_id = ?");
     $services_stmt->execute([$user_id]);
     $current_services = $services_stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-    // Récupération du catalogue produits
+    // Catalogue
     $catalogues_stmt = $pdo->prepare("SELECT nom_produit, image_produit FROM user_catalogues WHERE user_id = ?");
     $catalogues_stmt->execute([$user_id]);
     $current_catalogues = $catalogues_stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
-// 2. TRAITEMENT DE LA MISE À JOUR (SOUMISSION DU FORMULAIRE)
+// 2. TRAITEMENT DU FORMULAIRE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo->beginTransaction();
 
-        // Données du profil personnel
         $nom = $_POST['nom'] ?? null;
         $prenom = $_POST['prenom'] ?? null;
         $titre = $_POST['titre'] ?? null;
@@ -74,14 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $photo_profil = $profile['photo_profil'] ?? null;
         $photo_couverture = $profile['photo_couverture'] ?? null;
 
-        // Upload Photo Profil
         if (!empty($_FILES['photo_profil']['name'])) {
             $target = "uploads/profil_" . $user_id . "_" . time() . "_" . basename($_FILES['photo_profil']['name']);
             if (move_uploaded_file($_FILES['photo_profil']['tmp_name'], $target)) {
                 $photo_profil = $target;
             }
         }
-        // Upload Photo Couverture
         if (!empty($_FILES['photo_couverture']['name'])) {
             $target = "uploads/cover_" . $user_id . "_" . time() . "_" . basename($_FILES['photo_couverture']['name']);
             if (move_uploaded_file($_FILES['photo_couverture']['tmp_name'], $target)) {
@@ -89,18 +96,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Insertion / Mise à jour Table `profiles`
         if (!empty($profile)) {
             $up_prof = $pdo->prepare("UPDATE profiles SET nom = ?, prenom = ?, titre = ?, bio = ?, tel_perso = ?, photo_profil = ?, photo_couverture = ? WHERE user_id = ?");
             $up_prof->execute([$nom, $prenom, $titre, $bio, $tel_perso, $photo_profil, $photo_couverture, $user_id]);
         } else {
-            // Génération dynamique de `identify` si nouveau profil
             $identify = bin2hex(random_bytes(10));
             $in_prof = $pdo->prepare("INSERT INTO profiles (user_id, nom, prenom, titre, bio, tel_perso, photo_profil, photo_couverture, identify) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $in_prof->execute([$user_id, $nom, $prenom, $titre, $bio, $tel_perso, $photo_profil, $photo_couverture, $identify]);
         }
 
-        // Nettoyage et insertion des compétences
+        // Competences
         $del_comp = $pdo->prepare("DELETE FROM user_competences WHERE user_id = ?");
         $del_comp->execute([$user_id]);
         if (!empty($_POST['activites_competences'])) {
@@ -111,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Nettoyage et réinsertion des Réseaux Sociaux
+        // Réseaux Sociaux
         $del_soc = $pdo->prepare("DELETE FROM user_socials WHERE user_id = ?");
         $del_soc->execute([$user_id]);
         $in_soc = $pdo->prepare("INSERT INTO user_socials (user_id, type_reseau, plateforme, url) VALUES (?, ?, ?, ?)");
@@ -122,18 +127,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // TRAITEMENT DYNAMIQUE SELON LE TYPE DE COMPTE
         if (($user_data['account_type'] ?? '') === 'employer') {
             $nom_entreprise = $_POST['nom_entreprise'] ?? null;
             $poste_actuel = $_POST['poste_actuel'] ?? null;
             $apropos_entreprise = $_POST['apropos_entreprise'] ?? null;
 
             if (!empty($details)) {
-                $up_emp = $pdo->prepare("UPDATE employment_details SET nom_entreprise = ?, poste = ?, about_entreprise = ?, adresse_bureau = ? WHERE user_id = ?");
-                $up_emp->execute([$nom_entreprise, $poste_actuel, $apropos_entreprise, $adress_bureau, $user_id]);
+                $up_emp = $pdo->prepare("UPDATE employment_details SET nom_entreprise = ?, poste = ?, about_entreprise = ? WHERE user_id = ?");
+                $up_emp->execute([$nom_entreprise, $poste_actuel, $apropos_entreprise, $user_id]);
             } else {
-                $in_emp = $pdo->prepare("INSERT INTO employment_details (user_id, nom_entreprise, poste, about_entreprise, adresse_bureau) VALUES (?, ?, ?, ?, ?)");
-                $in_emp->execute([$user_id, $nom_entreprise, $poste_actuel, $apropos_entreprise, $adress_bureau]);
+                $in_emp = $pdo->prepare("INSERT INTO employment_details (user_id, nom_entreprise, poste, about_entreprise) VALUES (?, ?, ?, ?)");
+                $in_emp->execute([$user_id, $nom_entreprise, $poste_actuel, $apropos_entreprise]);
             }
 
             if (!empty($_POST['social_entreprise'])) {
@@ -142,7 +146,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         } else {
-            // Section Freelance / Entrepreneur
             $nom_entreprise_free = $_POST['nom_entreprise_free'] ?? null;
             $desc_entreprise_free = $_POST['desc_entreprise_free'] ?? null;
             $tel_bureau = $_POST['tel_bureau'] ?? null;
@@ -183,14 +186,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Catalogue Produits
+            // Catalogue
             $del_cat = $pdo->prepare("DELETE FROM user_catalogues WHERE user_id = ?");
             $del_cat->execute([$user_id]);
             if (!empty($_POST['catalogue_nom'])) {
                 $in_cat = $pdo->prepare("INSERT INTO user_catalogues (user_id, nom_produit, image_produit) VALUES (?, ?, ?)");
                 foreach ($_POST['catalogue_nom'] as $index => $nom_produit) {
                     $img_produit = $_POST['old_catalogue_image'][$index] ?? '';
-                    
                     if (!empty($_FILES['catalogue_image']['name'][$index])) {
                         $target = "uploads/prod_" . $user_id . "_" . time() . "_" . basename($_FILES['catalogue_image']['name'][$index]);
                         if (move_uploaded_file($_FILES['catalogue_image']['tmp_name'][$index], $target)) {
@@ -369,28 +371,18 @@ if (isset($_GET['success'])) {
                     </div>
                 </div>
 
+                <!-- SECTION LIENS SOCIAUX PERSONNELS (TOUS LES CHAMPS VISIBLES) -->
                 <h5 class="section-title"><i class="fas fa-hashtag me-2"></i>2. Liens Sociaux Personnels</h5>
-                <div class="row g-2 mb-3">
+                <div class="row g-3 mb-4">
+                    <?php foreach ($social_platforms as $key => $info): ?>
                     <div class="col-sm-6">
-                        <input type="url" name="social_perso[facebook]" class="form-control form-control-sm"
-                            placeholder="URL Facebook"
-                            value="<?php echo htmlspecialchars($social_mapped['perso']['facebook'] ?? ''); ?>">
+                        <label class="form-label small fw-bold"><i
+                                class="<?php echo $info['icon']; ?> me-1"></i><?php echo $info['label']; ?></label>
+                        <input type="url" name="social_perso[<?php echo $key; ?>]" class="form-control form-control-sm"
+                            placeholder="https://..."
+                            value="<?php echo htmlspecialchars($social_mapped['perso'][$key] ?? ''); ?>">
                     </div>
-                    <div class="col-sm-6">
-                        <input type="url" name="social_perso[instagram]" class="form-control form-control-sm"
-                            placeholder="URL Instagram"
-                            value="<?php echo htmlspecialchars($social_mapped['perso']['instagram'] ?? ''); ?>">
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="url" name="social_perso[linkedin]" class="form-control form-control-sm"
-                            placeholder="URL LinkedIn"
-                            value="<?php echo htmlspecialchars($social_mapped['perso']['linkedin'] ?? ''); ?>">
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="url" name="social_perso[whatsapp]" class="form-control form-control-sm"
-                            placeholder="Lien WhatsApp"
-                            value="<?php echo htmlspecialchars($social_mapped['perso']['whatsapp'] ?? ''); ?>">
-                    </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <?php if(($user_data['account_type'] ?? '') === 'employer'): ?>
@@ -414,22 +406,17 @@ if (isset($_GET['success'])) {
                         placeholder="Description de l'entreprise..."><?php echo htmlspecialchars($details['about_entreprise'] ?? ''); ?></textarea>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Adresse du bureau</label>
-                    <textarea name="adress_bureau" class="form-control" rows="2"
-                        placeholder="Adresse de l'entreprise..."><?php echo htmlspecialchars($details['adresse_bureau'] ?? ''); ?></textarea>
-                </div>
-
                 <label class="form-label small fw-bold text-muted">Réseaux Sociaux de l'Entreprise</label>
-                <div class="row g-2 mb-3">
-                    <div class="col-sm-6"><input type="url" name="social_entreprise[facebook]"
-                            class="form-control form-control-sm" placeholder="Facebook pro"
-                            value="<?php echo htmlspecialchars($social_mapped['entreprise']['facebook'] ?? ''); ?>">
+                <div class="row g-3 mb-3">
+                    <?php foreach ($social_platforms as $key => $info): ?>
+                    <div class="col-sm-6">
+                        <label class="form-label small fw-bold"><i
+                                class="<?php echo $info['icon']; ?> me-1"></i><?php echo $info['label']; ?></label>
+                        <input type="url" name="social_entreprise[<?php echo $key; ?>]"
+                            class="form-control form-control-sm" placeholder="https://..."
+                            value="<?php echo htmlspecialchars($social_mapped['entreprise'][$key] ?? ''); ?>">
                     </div>
-                    <div class="col-sm-6"><input type="url" name="social_entreprise[linkedin]"
-                            class="form-control form-control-sm" placeholder="LinkedIn pro"
-                            value="<?php echo htmlspecialchars($social_mapped['entreprise']['linkedin'] ?? ''); ?>">
-                    </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <?php else: ?>
@@ -469,15 +456,16 @@ if (isset($_GET['success'])) {
                 </div>
 
                 <label class="form-label small fw-bold text-muted">Réseaux Sociaux de l'Activité</label>
-                <div class="row g-2 mb-4">
-                    <div class="col-sm-6"><input type="url" name="social_entreprise_free[facebook]"
-                            class="form-control form-control-sm" placeholder="Facebook Établissement"
-                            value="<?php echo htmlspecialchars($social_mapped['freelance']['facebook'] ?? ''); ?>">
+                <div class="row g-3 mb-4">
+                    <?php foreach ($social_platforms as $key => $info): ?>
+                    <div class="col-sm-6">
+                        <label class="form-label small fw-bold"><i
+                                class="<?php echo $info['icon']; ?> me-1"></i><?php echo $info['label']; ?></label>
+                        <input type="url" name="social_entreprise_free[<?php echo $key; ?>]"
+                            class="form-control form-control-sm" placeholder="https://..."
+                            value="<?php echo htmlspecialchars($social_mapped['freelance'][$key] ?? ''); ?>">
                     </div>
-                    <div class="col-sm-6"><input type="url" name="social_entreprise_free[linkedin]"
-                            class="form-control form-control-sm" placeholder="LinkedIn Établissement"
-                            value="<?php echo htmlspecialchars($social_mapped['freelance']['linkedin'] ?? ''); ?>">
-                    </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <!-- SECTION SERVICES DYNAMIQUE -->
@@ -490,7 +478,6 @@ if (isset($_GET['success'])) {
                     </div>
 
                     <?php 
-                    // S'il n'y a aucun service enregistré, on affiche au moins une ligne vide
                     $services_to_show = !empty($current_services) ? $current_services : [['titre' => '', 'description' => '']];
                     foreach($services_to_show as $srv): 
                     ?>
@@ -518,7 +505,6 @@ if (isset($_GET['success'])) {
                     </div>
 
                     <?php 
-                    // S'il n'y a aucun produit enregistré, on affiche au moins une ligne vide
                     $catalogues_to_show = !empty($current_catalogues) ? $current_catalogues : [['nom_produit' => '', 'image_produit' => '']];
                     foreach($catalogues_to_show as $cat): 
                     ?>

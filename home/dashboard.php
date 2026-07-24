@@ -363,28 +363,35 @@ function getSocialIcon($plateforme) {
 
     .nt-details-row {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
+        /* Aligne l'icône au début au lieu du centre */
         gap: 10px;
         padding: 6px 0;
         border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .nt-details-row:last-child {
-        border-bottom: none;
     }
 
     .nt-details-row i {
         color: #475569;
         width: 16px;
         text-align: center;
+        margin-top: 3px;
+        /* Aligne parfaitement l'icône avec la première ligne */
+    }
+
+    .nt-details-row:last-child {
+        border-bottom: none;
     }
 
     .nt-details-text {
         font-weight: 600;
         color: #334155;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        /* Autorise le retour à la ligne */
+        word-break: break-word;
+        /* Casse les e-mails / adresses trop longs */
+        overflow-wrap: anywhere;
+        font-size: 0.82rem;
+        /* Légèrement réduit si nécessaire */
     }
 
     .nt-card-socials-row {
@@ -414,180 +421,6 @@ function getSocialIcon($plateforme) {
         letter-spacing: 2px;
         text-align: center;
     }
-
-    /* .nt-card {
-        background: #e9ecf5;
-        border-radius: 20px;
-        padding: 24px 20px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-        color: #1a2238;
-        position: relative;
-    } */
-
-    /* .nt-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-    } */
-
-    /* .nt-card-avatar-wrapper {
-        position: relative;
-        display: inline-block;
-    }
-
-    .nt-card-avatar {
-        width: 85px;
-        height: 85px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #fff;
-    }
-
-    .nt-card-verified {
-        position: absolute;
-        bottom: 2px;
-        right: 2px;
-        background: #2563eb;
-        color: white;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        font-size: 11px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid #e9ecf5;
-    }
-
-    .nt-card-identity {
-        flex: 1;
-        padding-left: 14px;
-        text-align: left;
-    }
-
-    .nt-card-name {
-        font-size: 1.1rem;
-        font-weight: 800;
-        line-height: 1.2;
-        color: #0f2256;
-        margin-bottom: 2px;
-        text-transform: uppercase;
-    }
-
-    .nt-card-sub {
-        font-size: 0.78rem;
-        font-weight: 700;
-        color: #4b5563;
-        font-style: italic;
-    }
-
-    .nt-card-logo img {
-        max-width: 50px;
-        height: auto;
-        border-radius: 6px;
-    }
-
-    .nt-card-body-details {
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(5px);
-        border-radius: 14px;
-        padding: 12px 14px;
-        margin-bottom: 18px;
-        font-size: 0.82rem;
-    }
-
-    .nt-card-qr-area {
-        position: relative;
-        display: inline-block;
-        background: white;
-        padding: 12px;
-        border-radius: 14px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-    }
-
-    .nt-card-qr-area img.qr-main {
-        width: 120px;
-        height: 120px;
-        display: block;
-    }
-
-    .nt-card-qr-logo-centered {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 32px;
-        height: 32px;
-        background-color: #ffffff;
-        padding: 3px;
-        border-radius: 6px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .nt-card-qr-logo-centered img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: 4px;
-    } */
-
-    /* .nt-details-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 5px 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .nt-details-row:last-child {
-        border-bottom: none;
-    }
-
-    .nt-details-row i {
-        color: #475569;
-        width: 14px;
-        text-align: center;
-    } */
-
-    /* .nt-details-text {
-        font-weight: 600;
-        color: #334155;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .nt-card-socials-row {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 8px;
-    }
-
-    .nt-mini-social-icon {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: #0f2256;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        text-decoration: none;
-    }
-
-    .nt-card-footer-tag {
-        font-size: 0.65rem;
-        font-weight: 800;
-        color: #94a3b8;
-        letter-spacing: 2px;
-        margin-top: 8px;
-    } */
     </style>
 </head>
 
