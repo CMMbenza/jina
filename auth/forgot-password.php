@@ -34,19 +34,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($email)) {
             $error = "Une erreur est survenue. Veuillez recommencer la procédure.";
-        } elseif (strlen($password) < 6) {
-            $error = "Le mot de passe doit contenir au moins 6 caractères.";
-            $userExists = true; // Permet de rester sur les champs de saisie du mot de passe
+        } elseif (strlen($password) < 4) { // Adapté par rapport au placeholder du HTML (4 car.)
+            $error = "Le mot de passe doit contenir au moins 4 caractères.";
+            $userExists = true; 
         } elseif ($password !== $password_confirm) {
             $error = "Les deux mots de passe ne sont pas identiques.";
-            $userExists = true; // Permet de rester sur les champs de saisie du mot de passe
+            $userExists = true; 
         } else {
-            // Hachage du mot de passe (Même logique que l'inscription)
+            // Hachage du mot de passe
             $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
             $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE email = ?");
             if ($stmt->execute([$passwordHash, $email])) {
-                $success = "Votre mot de passe a été réinitialisé avec succès !";
+                
+                // --- ENVOI DE L'EMAIL DE CONFIRMATION AVEC LE NOUVEAU MDP (CODE PUR PHP) ---
+                $to = trim($email);
+                $subject = "Réinitialisation réussie - Votre nouveau mot de passe JINA";
+
+                $messageHtml = "
+                <html>
+                <head>
+                    <title>Nouveau mot de passe JINA</title>
+                </head>
+                <body style='font-family: Arial, sans-serif; background-color: #f5f7fa; color: #1e293b; padding: 20px; margin: 0;'>
+                    <div style='max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #0f2256;'>
+                        <div style='padding: 30px; text-align: center; background-color: #0f2256;'>
+                            <h2 style='color: #ffcc00; margin: 0; font-size: 24px; font-weight: bold;'>Mot de passe mis à jour !</h2>
+                            <p style='color: white; margin: 5px 0 0 0;'>Votre demande de réinitialisation a été traitée.</p>
+                        </div>
+                        <div style='padding: 30px;'>
+                            <p>Bonjour,</p>
+                            <p>Le mot de passe associé à votre compte JINA (<strong>$to</strong>) vient d'être modifié avec succès.</p>
+                            
+                            <div style='background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 20px; margin: 20px 0;'>
+                                <p style='margin: 0;'><strong>Votre nouveau mot de passe est :</strong> <span style='font-family: monospace; background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #b45309;'>$password</span></p>
+                            </div>
+
+                            <p style='font-size: 13px; color: #64748b;'>Si vous n'êtes pas à l'origine de cette action, veuillez immédiatement contacter notre équipe technique.</p>
+
+                            <p style='text-align: center; margin-top: 30px;'>
+                                <a href='https://ntcard.notechgroup.com/auth/login.php' style='background-color: #0f2256; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;'>Se connecter maintenant</a>
+                            </p>
+                        </div>
+                        <div style='background-color: #f1f5f9; padding: 15px; text-align: center; font-size: 12px; color: #64748b;'>
+                            © " . date('Y') . " JINA. Tous droits réservés.
+                        </div>
+                    </div>
+                </body>
+                </html>
+                ";
+
+                $headers = "MIME-Version: 1.0" . "\r\n";
+                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                $headers .= "From: JINA <no-reply@notechgroup.com>" . "\r\n";
+                $headers .= "Reply-To: support@notechgroup.com" . "\r\n";
+                $headers .= "X-Mailer: PHP/" . phpversion();
+
+                @mail($to, $subject, $messageHtml, $headers);
+
+                $success = "Votre mot de passe a été réinitialisé avec succès ! Un e-mail contenant vos nouveaux accès vient de vous être envoyé.";
                 unset($_SESSION['reset_email']); // Nettoyage de la session
             } else {
                 $error = "Impossible de mettre à jour le mot de passe. Veuillez réessayer.";
@@ -63,9 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mot de passe oublié - JINA carte numérique</title>
+    <title>Mot de passe oublié - JINA</title>
 
-    <link rel="shortcut icon" href="../assets/img/logo-jina.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"

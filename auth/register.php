@@ -214,7 +214,7 @@
 <body>
 
     <div class="container my-5">
-        <div class="register-card mx-auto" style="max-width: 650px;">
+        <div class="register-card mx-auto" style="max-width: 850px;">
 
             <div class="text-center mb-4">
                 <img src="../assets/img/logo jina.jpeg" alt="Logo JINA" class="login-logo rounded">
@@ -400,6 +400,11 @@
                             <textarea name="apropos_entreprise" class="form-control"
                                 placeholder="À propos de l'entreprise (max 250caractères) *" rows="2"
                                 maxlength="250"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" name="adress_bureau" class="form-control"
+                                    placeholder="Adresse du bureau *">
                         </div>
 
                         <div class="mb-4">

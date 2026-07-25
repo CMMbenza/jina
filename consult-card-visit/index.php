@@ -18,7 +18,8 @@ $stmt->execute([$identify]);
 $user = $stmt->fetch();
 
 if (!$user) {
-    die("
+    // Utilisation de la syntaxe HEREDOC pour éviter les problèmes de guillemets
+    echo <<<HTML
     <!DOCTYPE html>
     <html lang='fr'>
     <head>
@@ -36,7 +37,9 @@ if (!$user) {
             </div>
         </div>
     </body>
-    </html>");
+    </html>
+    HTML;
+    exit;
 }
 
 $user_id = $user['id'];
@@ -111,7 +114,8 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
         font-family: 'Plus Jakarta Sans', sans-serif;
         background-color: var(--light-bg);
         color: var(--text-dark);
-        overflow-x: hidden; /* Empêche tout défilement horizontal */
+        overflow-x: hidden;
+        /* Empêche tout défilement horizontal */
         scroll-behavior: smooth;
         width: 100%;
     }
@@ -186,7 +190,7 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
         width: auto;
         object-fit: contain;
     }
-    
+
     /* --- HERO SECTION --- */
     .hero-section {
         background: linear-gradient(135deg, var(--jina-blue) 0%, #07112c 100%);
@@ -519,7 +523,7 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
         .navbar-brand span {
             font-size: 1.2rem;
         }
-        
+
         .ms-auto .btn {
             padding: 8px 15px;
             font-size: 0.8rem;
@@ -529,12 +533,14 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
             padding: 100px 0 60px 0;
         }
 
-        .profile-img, .profile-avatar-fallback {
+        .profile-img,
+        .profile-avatar-fallback {
             width: 180px;
             height: 180px;
         }
 
-        .profile-frame::before, .profile-frame::after {
+        .profile-frame::before,
+        .profile-frame::after {
             width: 50px;
             height: 50px;
         }
@@ -552,7 +558,7 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
             font-size: 1.3rem;
             text-align: center;
         }
-        
+
         .d-flex.flex-wrap {
             justify-content: center;
         }
@@ -560,12 +566,12 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
         .card-service {
             padding: 20px;
         }
-        
+
         .logo-container-box {
             width: 70px;
             height: 70px;
         }
-        
+
         .bg-jina-entreprise h2 {
             font-size: 1.4rem;
         }
@@ -577,7 +583,8 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
             padding: 120px 0 70px 0;
         }
 
-        .profile-img, .profile-avatar-fallback {
+        .profile-img,
+        .profile-avatar-fallback {
             width: 220px;
             height: 220px;
         }
@@ -589,20 +596,21 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
 
     /* Tablettes à Desktops (md à lg) */
     @media (max-width: 991.98px) {
+
         /* Force les éléments en colonne sur mobile/tablette si nécessaire */
         .row.align-items-center.g-5 {
             flex-direction: column;
             text-align: center;
         }
-        
+
         .hero-section .text-md-start {
             text-align: center !important;
         }
-        
+
         .hero-section .d-flex {
             justify-content: center;
         }
-        
+
         /* Ajustement espacement infos entreprise */
         .company-info-item {
             width: 100%;
@@ -710,12 +718,14 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
         <div class="container py-4">
             <div class="row">
                 <div class="col-12">
-                    <h6 class="text-jina-yellow fw-bold text-uppercase mb-3 tracking-wide text-center text-sm-start">STRUCTURE OFFICIELLE</h6>
+                    <h6 class="text-jina-yellow fw-bold text-uppercase mb-3 tracking-wide text-center text-sm-start">
+                        STRUCTURE OFFICIELLE</h6>
 
                     <?php if(!empty($details['nom_entreprise'])): ?>
                     <div class="card bg-transparent border-0 text-white">
                         <div class="card-body p-0">
-                            <div class="d-flex align-items-center gap-3 mb-4 flex-column flex-sm-row text-center text-sm-start">
+                            <div
+                                class="d-flex align-items-center gap-3 mb-4 flex-column flex-sm-row text-center text-sm-start">
                                 <?php if(!empty($details['logo_entreprise'])): ?>
                                 <div class="logo-container-box shadow-sm flex-shrink-0">
                                     <img src="../<?php echo htmlspecialchars($details['logo_entreprise']); ?>"
@@ -952,14 +962,16 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-5">
-                    <h3 class="fw-bold text-white mb-3 text-center text-lg-start"><?php echo htmlspecialchars($full_name); ?></h3>
-                    <p class="small text-white-50 pe-lg-4 mb-4 text-center text-lg-start text-justify-mobile">Retrouvez toutes mes activités ainsi que mes moyens de
+                    <h3 class="fw-bold text-white mb-3 text-center text-lg-start">
+                        <?php echo htmlspecialchars($full_name); ?></h3>
+                    <p class="small text-white-50 pe-lg-4 mb-4 text-center text-lg-start text-justify-mobile">Retrouvez
+                        toutes mes activités ainsi que mes moyens de
                         contact officiels configurés sur JINA.</p>
                     <?php if(!empty($socials)): ?>
+                    <h6 class="text-jina-yellow fw-bold small text-uppercase tracking-wider mb-3 d-none d-lg-block">
+                        SUIVRE MA PRÉSENCE
+                        EN LIGNE</h6>
                     <div class="mb-4 d-flex justify-content-center justify-content-lg-start">
-                        <h6 class="text-jina-yellow fw-bold small text-uppercase tracking-wider mb-3 d-none d-lg-block">SUIVRE MA PRÉSENCE
-                            EN LIGNE</h6>
-
                         <?php 
                         foreach($socials as $social): 
                             if (isset($social['type_reseau']) && strtolower(trim($social['type_reseau'])) === 'perso'):
@@ -1000,12 +1012,15 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
                 </div>
 
                 <div class="col-lg-7">
-                    <h4 class="fw-bold text-white h5 mb-4 text-center text-lg-start">📞 Coordonnées Professionnelles</h4>
+                    <h4 class="fw-bold text-white h5 mb-4 text-center text-lg-start">📞 Coordonnées Professionnelles
+                    </h4>
                     <div class="row g-3 text-center text-sm-start">
                         <div class="col-sm-6">
                             <?php if(!empty($user['tel_perso'])): ?>
-                            <div class="d-flex align-items-start mb-3 flex-column flex-sm-row align-items-center align-items-sm-start">
-                                <div class="text-jina-yellow mb-2 mb-sm-0 me-sm-3"><i class="fas fa-phone-alt fs-5"></i></div>
+                            <div
+                                class="d-flex align-items-start mb-3 flex-column flex-sm-row align-items-center align-items-sm-start">
+                                <div class="text-jina-yellow mb-2 mb-sm-0 me-sm-3"><i class="fas fa-phone-alt fs-5"></i>
+                                </div>
                                 <div>
                                     <span class="d-block text-white fw-semibold small">Téléphone / WhatsApp :</span>
                                     <a href="tel:<?php echo htmlspecialchars($user['tel_perso']); ?>"
@@ -1016,8 +1031,10 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
                         </div>
                         <div class="col-sm-6">
                             <?php if(!empty($details['adresse_bureau'])): ?>
-                            <div class="d-flex align-items-start mb-3 flex-column flex-sm-row align-items-center align-items-sm-start">
-                                <div class="text-jina-yellow mb-2 mb-sm-0 me-sm-3"><i class="fas fa-map-marker-alt fs-5"></i></div>
+                            <div
+                                class="d-flex align-items-start mb-3 flex-column flex-sm-row align-items-center align-items-sm-start">
+                                <div class="text-jina-yellow mb-2 mb-sm-0 me-sm-3"><i
+                                        class="fas fa-map-marker-alt fs-5"></i></div>
                                 <div>
                                     <span class="d-block text-white fw-semibold small">Adresse Bureau :</span>
                                     <span
@@ -1029,8 +1046,10 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
                     </div>
                     <div class="row g-3 text-center text-sm-start">
                         <div class="col-sm-6">
-                            <div class="d-flex align-items-start mb-3 flex-column flex-sm-row align-items-center align-items-sm-start">
-                                <div class="text-jina-yellow mb-2 mb-sm-0 me-sm-3"><i class="fas fa-envelope fs-5"></i></div>
+                            <div
+                                class="d-flex align-items-start mb-3 flex-column flex-sm-row align-items-center align-items-sm-start">
+                                <div class="text-jina-yellow mb-2 mb-sm-0 me-sm-3"><i class="fas fa-envelope fs-5"></i>
+                                </div>
                                 <div>
                                     <span class="d-block text-white fw-semibold small">E-mail :</span>
                                     <a href="mailto:<?php echo htmlspecialchars($user['email']); ?>"
