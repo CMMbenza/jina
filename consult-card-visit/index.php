@@ -968,11 +968,10 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
                         toutes mes activités ainsi que mes moyens de
                         contact officiels configurés sur JINA.</p>
                     <?php if(!empty($socials)): ?>
+                    <h6 class="text-jina-yellow fw-bold small text-uppercase tracking-wider mb-3 d-none d-lg-block">
+                        SUIVRE MA PRÉSENCE
+                        EN LIGNE</h6>
                     <div class="mb-4 d-flex justify-content-center justify-content-lg-start">
-                        <h6 class="text-jina-yellow fw-bold small text-uppercase tracking-wider mb-3 d-none d-lg-block">
-                            SUIVRE MA PRÉSENCE
-                            EN LIGNE</h6>
-
                         <?php 
                         foreach($socials as $social): 
                             if (isset($social['type_reseau']) && strtolower(trim($social['type_reseau'])) === 'perso'):

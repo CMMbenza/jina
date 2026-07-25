@@ -240,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':user_id'          => $userId,
                 ':nom_entreprise'   => $_POST['nom_entreprise'] ?? null,
                 ':poste'            => $_POST['poste_actuel'] ?? null,
-                ':about_entreprise' => $_POST['apropos_entreprise'] ?? null
+                ':about_entreprise' => $_POST['apropos_entreprise'] ?? null,
                 ':adresse_bureau' => $_POST['adress_bureau'] ?? null
             ]);
         } 

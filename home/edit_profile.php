@@ -376,7 +376,7 @@ if (isset($_GET['success'])) {
                         <label class="form-label small fw-bold">Photo de Profil</label>
                         <div class="d-flex gap-2 align-items-center">
                             <?php if(!empty($profile['photo_profil'])): ?><img
-                                src="<?php echo $profile['photo_profil']; ?>" class="preview-img"><?php endif; ?>
+                                src="../<?php echo $profile['photo_profil']; ?>" class="preview-img"><?php endif; ?>
                             <input type="file" name="photo_profil" class="form-control">
                         </div>
                     </div>
@@ -384,7 +384,7 @@ if (isset($_GET['success'])) {
                         <label class="form-label small fw-bold">Photo de Couverture</label>
                         <div class="d-flex gap-2 align-items-center">
                             <?php if(!empty($profile['photo_couverture'])): ?><img
-                                src="<?php echo $profile['photo_couverture']; ?>" class="preview-img"><?php endif; ?>
+                                src="../<?php echo $profile['photo_couverture']; ?>" class="preview-img"><?php endif; ?>
                             <input type="file" name="photo_couverture" class="form-control">
                         </div>
                     </div>
@@ -540,7 +540,7 @@ if (isset($_GET['success'])) {
                         </div>
                         <div class="col-sm-2 text-center">
                             <?php if(!empty($cat['image_produit'])): ?><img
-                                src="<?php echo htmlspecialchars($cat['image_produit']); ?>" class="preview-img"
+                                src="../<?php echo htmlspecialchars($cat['image_produit']); ?>" class="preview-img"
                                 style="width:35px;height:35px;"><?php endif; ?>
                         </div>
                         <div class="col-sm-1">
