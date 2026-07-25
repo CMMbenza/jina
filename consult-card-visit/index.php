@@ -92,6 +92,7 @@ $titre_pro = !empty($user['titre']) ? htmlspecialchars($user['titre']) : 'Profes
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($full_name); ?> | JINA carte numérique</title>
+    <meta name="google-adsense-account" content="ca-pub-5378843584978086">
     <meta name="description" content="Profil professionnel de <?php echo htmlspecialchars($full_name); ?> sur JINA.">
 
     <link rel="shortcut icon" href="../assets/img/logo-jina.ico" type="image/x-icon">

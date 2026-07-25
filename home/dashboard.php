@@ -637,12 +637,12 @@ function getSocialIcon($plateforme) {
                                 </div>
                             </div>
                             <div class="nt-card-logo">
-                                <img src="../assets/img/logo jina.jpeg" alt="Logo">
+                                <!-- <img src="../assets/img/logo jina.jpeg" alt="Logo"> -->
                             </div>
                         </div>
 
                         <!-- Bloc des Coordonnées Textuelles -->
-                        <div class="nt-card-body-details text-start">
+                        <div class="nt-card-body-details text-start mt-3 mb-3">
                             <div class="nt-details-row">
                                 <i class="fas fa-phone-alt"></i>
                                 <div class="nt-details-text">
@@ -698,7 +698,7 @@ function getSocialIcon($plateforme) {
                             </div>
                         </div>
 
-                        <div class="nt-card-footer-tag">PRODUIT DE NOTECH</div>
+                        <div class="nt-card-footer-tag mt-2">PRODUIT DE NOTECH</div>
                     </div>
                     <!-- FIN DE LA CARTE -->
 
